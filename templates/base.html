@@ -1,0 +1,50 @@
+{% load static %}<!doctype html>
+<html lang="es" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111318">
+  <title>{% block title %}Administración{% endblock %} · Nexus Automotive</title>
+  <link rel="icon" href="{% static 'nexus/mark.svg' %}" type="image/svg+xml">
+  <link href="{% static 'vendor/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'nexus/app.css' %}" rel="stylesheet">
+</head>
+<body>
+<a class="visually-hidden-focusable skip-link" href="#contenido">Ir al contenido</a>
+{% if user.is_authenticated %}
+<div class="app-shell">
+  <aside class="sidebar offcanvas-lg offcanvas-start" tabindex="-1" id="navegacion" aria-labelledby="navigation-label">
+    <div class="offcanvas-header d-lg-none"><span id="navigation-label">Navegación</span><button class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#navegacion" aria-label="Cerrar menú"></button></div>
+    <a class="brand" href="{% url 'nexus:dashboard' %}" aria-label="Nexus Automotive, inicio"><img src="{% static 'nexus/mark.svg' %}" width="42" height="42" alt=""><span>NEXUS<small>AUTOMOTIVE</small></span></a>
+    <div class="sidebar-label">ESPACIO DE TRABAJO</div>
+    <nav class="main-nav" aria-label="Principal">
+      <a href="{% url 'nexus:dashboard' %}" class="{% if seccion == 'dashboard' %}active{% endif %}" {% if seccion == 'dashboard' %}aria-current="page"{% endif %}><span class="nav-symbol">▦</span>Resumen</a>
+      {% if es_admin %}<a href="{% url 'nexus:empresas' %}" class="{% if seccion == 'empresas' %}active{% endif %}"><span class="nav-symbol">▤</span>Empresas</a>{% endif %}
+      <a href="{% url 'nexus:trabajos' %}" class="{% if seccion == 'trabajos' %}active{% endif %}"><span class="nav-symbol">▣</span>Trabajos</a>
+      <a href="{% url 'nexus:trabajos' %}?estado=pendiente_entrega"><span class="nav-symbol">◷</span>Pendientes</a>
+      {% if es_admin %}
+      <div class="sidebar-label mt-4">ANÁLISIS Y FIDELIZACIÓN</div>
+      <a href="{% url 'nexus:comparativo' %}" class="{% if seccion == 'core' %}active{% endif %}"><span class="nav-symbol">▥</span>Comparativo de empresas</a>
+      <a href="{% url 'nexus:reglas' %}" class="{% if seccion == 'reglas' %}active{% endif %}"><span class="nav-symbol">◇</span>Reglas de beneficios</a>
+      {% if user.is_superuser %}<a href="/admin/auth/user/"><span class="nav-symbol">♙</span>Usuarios y permisos <small>↗</small></a>{% endif %}
+      {% endif %}
+    </nav>
+    <div class="sidebar-bottom"><span class="status-dot"></span> Gestión operativa <small>Nexus Automotive · 2026</small></div>
+  </aside>
+  <div class="main-area">
+    <header class="topbar">
+      <div class="d-flex align-items-center gap-3"><button class="btn btn-outline-secondary d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#navegacion" aria-label="Abrir menú">☰</button><span class="topbar-breadcrumb">Nexus Automotive <span>/</span> Administración</span></div>
+      <div class="account"><span class="avatar">{{ user.username|first|upper }}</span><span class="account-info">{{ user.get_full_name|default:user.username }}<small>{{ rol_actual }}</small></span><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="btn btn-quiet" title="Cerrar sesión" aria-label="Cerrar sesión">Salir ↗</button></form></div>
+    </header>
+    <main id="contenido" class="workspace">
+      {% for message in messages %}<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %}" role="status">{{ message }}</div>{% endfor %}
+      {% block content %}{% endblock %}
+      <footer class="workspace-footer">NEXUS AUTOMOTIVE<span>Registro · Entrega · Fidelización</span></footer>
+    </main>
+  </div>
+</div>
+{% else %}
+<main id="contenido">{% block public_content %}{% endblock %}</main>
+{% endif %}
+<script src="{% static 'vendor/bootstrap.bundle.min.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body></html>
