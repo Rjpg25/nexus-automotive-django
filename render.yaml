@@ -4,7 +4,7 @@ services:
   - type: web
     name: nexus-automotive-django
     runtime: python
-    branch: feat/nexus-administracion
+    branch: main
     plan: free
     buildCommand: bash build.sh
     startCommand: bash start.sh
